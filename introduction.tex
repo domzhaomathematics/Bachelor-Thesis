@@ -1,0 +1,149 @@
+% Some commands used in this file
+\newcommand{\package}{\emph}
+
+\chapter{A Brief History of Learning}
+
+This is version \verb-v1.4- of the template.
+
+We assume that you found this template on our institute's website, so
+we do not repeat everything stated there.  Consult the website again
+for pointers to further reading about \LaTeX{}.  This chapter only
+gives a brief overview of the files you are looking at.
+
+
+
+
+\section{Regression}
+We start this section with some notations. We will assume that the data
+consists of observations $\mathbf{X}=\left(X_{1}, \ldots, X_{n}\right)$ which are drawn independently from an unknown random distribution  $P_{\theta} \in\left\{P_{\theta}: \vartheta \in \Theta\right\}$ from a known model class which is determined solely by this parameter $\theta$.
+Our goal is find an estimator , a statistic, that approximates the said parameter.
+
+\begin{definition}
+An estimator $T(\mathbf{X})$ is some given (measurable) function $T(\cdot)$ evaluated at the observations X. The function $T(\cdot)$ is not allowed to depend on unknown parameters.
+\end{definition}
+Generally, we denote the observations as $(\mathbf{X},\mathbf{Y})=\left((X_{1},Y_{1}), \ldots, (X_{n},Y_{n})\right)$ with X defined as features and Y defined as the variable of interest. The reason why we would want to separate our observations (of arbitrary dimension) in two parts is that , in practice, it is often difficult and impractical to find the joint
+distribution $P_{\theta}(X,Y)$, because its complexity. Furthermore, it is rare that we would aim at predicting a random process without some kind of given information. Thus, we instead take a Bayesian stance and transform the problem into finding the posterior distribution $P_{\theta}(Y|X)$. 
+\\
+\\
+\\
+\\
+
+\begin{definition}
+Let (X,Y) be a random variable described as above and let 
+$(\mathbf{X},\mathbf{Y})=\left((X_{1},Y_{1}), \ldots, (X_{n},Y_{n})\right)$ be our observations. If $Y \sim \mathcal{N}(\theta X,\,\sigma^{2})\  $ gaussian distributed for a fixed $\sigma^{2}$ and some unknown parameter $\theta$. The maximum likelihood of the posterior $\hat{\theta}=\underset{\theta \in \Theta}{\arg \max } \widehat{L}_{n}(\theta ;\mathbf{Y}|\mathbf{X})$ is called the Least Squares Estimator
+
+\end{definition}
+
+
+
+The Least Squares Estimator is so common that it is often described and defined directly by it's explicit form, without diving into the probabilistic interpretation. In fact, we will see that its name comes from there.
+
+\begin{theorem}
+  The Least Square Estimator minimizes the function $L({\theta})=\|\mathbf{Y}-\mathbf{X} {\theta}\|^{2}$
+\end{theorem}
+
+\begin{proof}
+  Given our definition of Y, we directly compute from the likelihood of a Gaussian random variable with fixed $\sigma$.
+  
+  We have that 
+  $\widehat{L}_{n}(\theta ;(\mathbf{Y}|\mathbf{X})=\left(2 \pi \sigma^{2}\right)^{-n / 2} \exp \left(-\frac{1}{2 \sigma^{2}} \|\mathbf{Y}-\mathbf{X} {\theta}\|^{2}\right)$
+  
+  Then,
+  $\hat{\theta}=\underset{\theta \in \Theta}{\arg \max } \widehat{L}_{n}(\theta ;(\mathbf{Y}|\mathbf{X})=\underset{\theta \in \Theta}{\arg \max } \log\widehat{L}_{n}(\theta ;(\mathbf{Y}|\mathbf{X})=\underset{\theta \in \Theta}{\arg \max }  -\frac{n}{2} \ln (2 \pi)-\frac{n}{2} \ln \left(\sigma^{2}\right)-\frac{1}{2 \sigma^{2}} \|\mathbf{Y}-\mathbf{X} {\theta}\|^{2}=\underset{\theta \in \Theta}{\arg \max } \widehat{L}_{n}(\theta ;(\mathbf{Y}|\mathbf{X})=\underset{\theta \in \Theta}{\arg \min }\|\mathbf{Y}-\mathbf{X} {\theta}\|^{2}$
+\end{proof}
+
+
+
+The function that we're trying to minimize is generally called the \textbf{loss function} . Any loss function in the form of the one described in Theorem 1.3 is called the mean squared error (MSE). Finding Least Square Estimator that minimizes this function in this case is simple, we have a convex loss function and we can even find an analytic solution. This is often not the case, as we will see in a bit.
+
+The question that we're implicitly asking is, knowing that the posterior distribution of Y is distributed as a linear function $X\theta$ surrounded by a Gaussian noise, what is the most likely linear function (which only depends on $\theta$) given our observations (\textbf{X},\textbf{Y}). Then, after finding good parameters, we will use this guiding function as our \textbf{predictor} for Y given X, since the most likely value in a Gaussian distribution is the mean. 
+
+
+What have we done until know? \textbf{It was given} that the posterior distribution of our variable of interest Y was in the model class $P_{\theta}\sim \mathcal{N}(\theta X,\sigma^{2}), \vartheta \in \Theta$ and a fixed $\sigma^{2}$. Knowing that, we found the appropriate $\theta$ to predict Y as a function of X by finding the maximum likelihood of this parameter given our observations.
+
+The assumption that Y is distributed as a Gaussian noise around a linear function (see fig [1])  is purely arbitrary. What if the Gaussian noise was distributed around another function?  What if the noise was distributed around said function not as a Gaussian variable? What if there is no guiding function at all? (see fig[2])
+
+Well, if there isn't any guiding function, meaning that the variable of interest is just a noise, then there's nothing we can do , since it would mean that it's a purely stochastic process. This is not what we're interested in.
+
+Handling the case of a different guiding function is not much different. Indeed, if we assume that $Y \sim \mathcal{N}(f_{\theta}(X),\sigma^{2})$ for some $\theta$ , we can quickly see that the maximum likelihood for observations (\textbf{X},\textbf{Y}) is
+
+$\widehat{L}_{n}(\theta ;(\mathbf{Y}|\mathbf{X})=\left(2 \pi \sigma^{2}\right)^{-n / 2} \exp \left(-\frac{1}{2 \sigma^{2}} \|\mathbf{Y}-f_{\theta}(X)\|^{2}\right)$ 
+
+and that we need to minimize the function 
+
+$\underset{\theta \in \Theta}{\arg \min }\|\mathbf{Y}-f_{\theta}(X)\|^{2}$
+
+So our loss function is still the \textbf{MSE}. Note that depending on $f_{\theta}$ , this loss function could be not convex nor analytically solvable.
+
+If the noise is not distribution as a Gaussian variable, that would drastically change our likelihood function and the loss function to minimize. Finding out what these loss functions would be for different noise distribution is left as an exercise for the reader.
+
+As we conclude this section , we remind the reader that every time we use the MSE loss to find a \textbf{prediction function}, we hypothesize under the hood that the variable of interest Y is distributed as Gaussian noise around a function belonging to a function class $f_{\theta} \in\left\{f_{\theta}: \vartheta \in \Theta\right\}$  that only depends on $\theta$. Then in the hope of finding the appropriate function ( the appropriate $\theta$), we calculate the maximum likelihood estimator that will converge to the real parameter given enough observations (under some regularity criteria).
+
+The attentive reader will notice that there's still an assumption that we haven't addressed in this section. How did we choose our function class? We first used the class of all linear function and showed that we could use any other types of function that depends on $\theta$ (quadratic, exponential,etc), but which class should we use exactly? A wrong choice of class could drastically change our predictions and it seems hard to choose a correct one when the data is complex and high dimensional.  Wouldn't it be perfect if there was a certain type of function class, that given some parameters, it could approximate \textbf{any} functions? This would remove the need to guess the shape of our guiding function and finding the right parameters from this class would also take care of finding the right shape. We will see in the Neural Network section that indeed, there is such a function class.
+
+
+
+\section{Classification}
+\section {Neural Networks}
+In the regression section, we hinted on the existence of a model class that could approximate any function. Enters the first revolution ,blabla
+\section{Backpropagation}
+Knowing that we could approximate many functions with the feedforward neural networks and that the theorem dates from XXXX, why hasn't the technology taken off? Unlike the linear regression case, it  s almost always the case that our optimization problem doesn't have an analytical solution. In practice, we would need to rely on convex optimisation algorithms. Furthermore, it is also rare the our loss function is convex, so the problem is reduced from finding the optimum to finding a local optimum. To do so we rely on the gradient descent method which works as follows. Given ....
+....
+-Proof of convergences to local optima
+Thus, once we have the gradients, we can assure that our loss will converge to a local optimum. The backbone of deep learning and what made it computationally feasible is the algorithm that makes these gradient calculations efficient and non-redundant. We call it backpropagation. The Backpropagation algorithm makes use of
+
+Explanation of backpropagation algorithm. If it's just the chain rule, why such a fancy name? Is backprop just updating gradients? It is true , but the main raison-d'etre of the algorithm is not the gradient update itself, but how we re-use previous computations to quickly get the gradients.
+
+
+\section{Convolutional Neural Networks}
+
+This file defines a bunch of theorem-like environments.
+
+\begin{theorem}
+  An example theorem.
+\end{theorem}
+
+\begin{proof}
+  Proof text goes here.
+\end{proof}
+
+Note that the q.e.d.\ symbol moves to the correct place automatically
+if you end the proof with an \texttt{enumerate} or
+\texttt{displaymath}.  You do not need to use \verb-\qedhere- as with
+\package{amsthm}.
+
+\begin{theorem}[Some Famous Guy]
+  Another example theorem.
+\end{theorem}
+
+\begin{proof}
+  This proof
+  \begin{enumerate}
+  \item ends in an enumerate.
+  \end{enumerate}
+\end{proof}
+
+\begin{proposition}
+  Note that all theorem-like environments are by default numbered on
+  the same counter.
+\end{proposition}
+
+\begin{proof}
+  This proof ends in a display like so:
+  \begin{displaymath}
+    f(x) = x^2.
+  \end{displaymath}
+\end{proof}
+
+\section{Meta-Learning}
+
+This defines the overall look of the document -- for example, it
+changes the chapter and section heading appearance.  We consider this
+a `do not touch' area.  Take a look at the excellent \emph{Memoir}
+documentation before changing it.
+
+In fact, take a look at the excellent \emph{Memoir} documentation,
+full stop.
+
+
+
